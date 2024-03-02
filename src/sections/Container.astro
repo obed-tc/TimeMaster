@@ -52,65 +52,103 @@ import TextField from "./../components/TextField.astro";
   }
 </style>
 <script>
-  let values_A = {};
-  let values_B = {};
-  let resultado = { Dias: "", Hora: "", Minutos: "", Segundo: "" };
-  document.getElementById("operacion").addEventListener("change", function () {
-    const signElement = document.getElementById("sign");
-    const operacion = this.value;
-    let sign = "+";
-    if (operacion === "Sumar") {
-      sign = "÷";
-    } else if (operacion == "Restar") {
-      sign = "-";
-    } else if (operacion == "Multiplicar") {
-      sign = "x";
-    } else if (operacion == "Dividir") {
-      sign = "/";
+  let values_A: any = {};
+  let values_B: any = {};
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const operacionElement = document.getElementById("operacion");
+    if (operacionElement) {
+      operacionElement.addEventListener("change", function () {
+        const signElement = document.getElementById("sign");
+        if (signElement) {
+          const operacion = (operacionElement as HTMLSelectElement).value;
+          let sign = "+";
+          if (operacion === "Sumar") {
+            sign = "+";
+          } else if (operacion == "Restar") {
+            sign = "-";
+          } else if (operacion == "Multiplicar") {
+            sign = "x";
+          } else if (operacion == "Dividir") {
+            sign = "÷";
+          }
+          signElement.textContent = sign;
+        }
+      });
     }
-    signElement.textContent = sign;
+
+    const input_elements_a = document.querySelectorAll(".content-a");
+    const input_elements_b = document.querySelectorAll(".content-b");
+
+    input_elements_a.forEach((element) => {
+      const input_fields = element.querySelectorAll(".time");
+      input_fields.forEach((input) => {
+        input.addEventListener("input", handleChange_a);
+      });
+    });
+
+    input_elements_b.forEach((element) => {
+      const input_fields = element.querySelectorAll(".time");
+      input_fields.forEach((input) => {
+        input.addEventListener("input", handleChange_b);
+      });
+    });
   });
 
-  function getTextFieldValues(element) {
+  function getTextFieldValues(element: Element) {
     const input_elements = element.querySelectorAll(".time");
-    const values = {};
+    const values: { [key: string]: string } = {};
     input_elements.forEach((input) => {
-      values[input.previousElementSibling.textContent.trim()] = input.value;
+      const previousSibling =
+        input.previousElementSibling as HTMLElement | null;
+      if (previousSibling && previousSibling.textContent) {
+        values[previousSibling.textContent.trim()] = (
+          input as HTMLInputElement
+        ).value;
+      }
     });
     return values;
   }
 
-  function handleChange_a(event) {
-    const element = event.target.closest(".content-a");
-    values_A = getTextFieldValues(element);
-    const operacion = document.getElementById("sign").textContent;
+  function handleChange_a(event: Event) {
+    const element = (event.target as HTMLElement)?.closest(".content-a");
 
-    if (operacion == "+") {
-      Sumar(values_A, values_B);
-    } else if (operacion == "-") {
-      Restar(values_A, values_B);
-    } else if (operacion == "x") {
-      Multiplicar(values_A, values_B);
-    } else if (operacion == "/") {
-      Dividir(values_A, values_B);
+    if (element) {
+      values_A = getTextFieldValues(element);
+      const operacion = document.getElementById("sign")?.textContent;
+
+      if (operacion == "+") {
+        Sumar(values_A, values_B);
+      } else if (operacion == "-") {
+        Restar(values_A, values_B);
+      } else if (operacion == "x") {
+        Multiplicar(values_A, values_B);
+      } else if (operacion == "÷") {
+        Dividir(values_A, values_B);
+      }
     }
   }
-  function handleChange_b(event) {
-    const element = event.target.closest(".content-b");
-    values_B = getTextFieldValues(element);
-    const operacion = document.getElementById("sign").textContent;
 
-    if (operacion == "+") {
-      Sumar(values_A, values_B);
-    } else if (operacion == "-") {
-      Restar(values_A, values_B);
-    } else if (operacion == "x") {
-      Multiplicar(values_A, values_B);
-    } else if (operacion == "/") {
-      Dividir(values_A, values_B);
+  function handleChange_b(event: Event) {
+    const element = (event.target as HTMLElement)?.closest(".content-b");
+
+    if (element) {
+      values_B = getTextFieldValues(element);
+      const operacion = document.getElementById("sign")?.textContent;
+
+      if (operacion == "+") {
+        Sumar(values_A, values_B);
+      } else if (operacion == "-") {
+        Restar(values_A, values_B);
+      } else if (operacion == "x") {
+        Multiplicar(values_A, values_B);
+      } else if (operacion == "÷") {
+        Dividir(values_A, values_B);
+      }
     }
   }
-  function Sumar(valores1, valores2) {
+
+  function Sumar(valores1: any, valores2: any) {
     const dias1 = parseInt(valores1.Dias || "0");
     const horas1 = parseInt(valores1.Hora || "0");
     const minutos1 = parseInt(valores1.Minutos || "0");
@@ -154,7 +192,7 @@ import TextField from "./../components/TextField.astro";
       segundosSuma.toString().padStart(2, "0")
     );
   }
-  function Multiplicar(valores1, valores2) {
+  function Multiplicar(valores1: any, valores2: any) {
     const dias1 = parseInt(valores1.Dias || "0");
     const horas1 = parseInt(valores1.Hora || "0");
     const minutos1 = parseInt(valores1.Minutos || "0");
@@ -165,13 +203,11 @@ import TextField from "./../components/TextField.astro";
     const minutos2 = parseInt(valores2.Minutos || "0");
     const segundos2 = parseInt(valores2.Segundo || "0");
 
-    // Realizar la multiplicación de los valores
     const diasMultiplicados = dias1 * dias2;
     const horasMultiplicadas = horas1 * horas2;
     const minutosMultiplicados = minutos1 * minutos2;
     const segundosMultiplicados = segundos1 * segundos2;
 
-    // Devolver los valores multiplicados como objeto
     modificarValores(
       diasMultiplicados.toString().padStart(2, "0"),
       horasMultiplicadas.toString().padStart(2, "0"),
@@ -179,25 +215,22 @@ import TextField from "./../components/TextField.astro";
       segundosMultiplicados.toString().padStart(2, "0")
     );
   }
-  function Dividir(valores1, valores2) {
-    // Convertir los valores de cadena a números enteros
+  function Dividir(valores1: any, valores2: any) {
     const dias1 = parseInt(valores1.Dias || "0");
     const horas1 = parseInt(valores1.Hora || "0");
     const minutos1 = parseInt(valores1.Minutos || "0");
     const segundos1 = parseInt(valores1.Segundo || "0");
 
-    const dias2 = parseInt(valores2.Dias || "1"); // Divisor por defecto es 1 para evitar la división por cero
+    const dias2 = parseInt(valores2.Dias || "1");
     const horas2 = parseInt(valores2.Hora || "1");
     const minutos2 = parseInt(valores2.Minutos || "1");
     const segundos2 = parseInt(valores2.Segundo || "1");
 
-    // Realizar la división de los valores
     const diasDivididos = dias1 / dias2;
     const horasDivididas = horas1 / horas2;
     const minutosDivididos = minutos1 / minutos2;
     const segundosDivididos = segundos1 / segundos2;
 
-    // Devolver los valores divididos como objeto
     modificarValores(
       diasDivididos.toString().padStart(2, "0"),
       horasDivididas.toString().padStart(2, "0"),
@@ -206,8 +239,7 @@ import TextField from "./../components/TextField.astro";
     );
   }
 
-  function Restar(valores1, valores2) {
-    // Convertir los valores de cadena a números enteros
+  function Restar(valores1: any, valores2: any) {
     const dias1 = parseInt(valores1.Dias || "0");
     const horas1 = parseInt(valores1.Hora || "0");
     const minutos1 = parseInt(valores1.Minutos || "0");
@@ -218,13 +250,11 @@ import TextField from "./../components/TextField.astro";
     const minutos2 = parseInt(valores2.Minutos || "0");
     const segundos2 = parseInt(valores2.Segundo || "0");
 
-    // Restar los valores correspondientes
     let diasResta = dias1 - dias2;
     let horasResta = horas1 - horas2;
     let minutosResta = minutos1 - minutos2;
     let segundosResta = segundos1 - segundos2;
 
-    // Manejar el acarreo de valores negativos
     if (segundosResta < 0) {
       segundosResta += 60;
       minutosResta -= 1;
@@ -238,7 +268,6 @@ import TextField from "./../components/TextField.astro";
       diasResta -= 1;
     }
 
-    // Devolver los valores restados como objeto
     modificarValores(
       diasResta.toString().padStart(2, "0"),
       horasResta.toString().padStart(2, "0"),
@@ -246,16 +275,37 @@ import TextField from "./../components/TextField.astro";
       segundosResta.toString().padStart(2, "0")
     );
   }
-  function modificarValores(dia, hora, minuto, segundo) {
-    document.getElementById("resultado_dia").querySelector("input").value = dia;
-    document.getElementById("resultado_hora").querySelector("input").value =
-      hora;
-    document.getElementById("resultado_minuto").querySelector("input").value =
-      minuto;
-    document.getElementById("resultado_segundo").querySelector("input").value =
-      segundo;
-  }
+  function modificarValores(
+    dia: string,
+    hora: string,
+    minuto: string,
+    segundo: string
+  ) {
+    const resultadoDiaInput = document
+      .getElementById("resultado_dia")
+      ?.querySelector("input");
+    const resultadoHoraInput = document
+      .getElementById("resultado_hora")
+      ?.querySelector("input");
+    const resultadoMinutoInput = document
+      .getElementById("resultado_minuto")
+      ?.querySelector("input");
+    const resultadoSegundoInput = document
+      .getElementById("resultado_segundo")
+      ?.querySelector("input");
 
+    if (
+      resultadoDiaInput &&
+      resultadoHoraInput &&
+      resultadoMinutoInput &&
+      resultadoSegundoInput
+    ) {
+      resultadoDiaInput.value = dia;
+      resultadoHoraInput.value = hora;
+      resultadoMinutoInput.value = minuto;
+      resultadoSegundoInput.value = segundo;
+    }
+  }
   const input_elements_a = document.querySelectorAll(".content-a");
   const input_elements_b = document.querySelectorAll(".content-b");
 
