@@ -1,0 +1,274 @@
+---
+import TextField from "./../components/TextField.astro";
+---
+
+<container class="">
+  <div class="flex flex-row justify-center mb-10">
+    Operación
+    <select class="content bg-transparent flex justify-end" id="operacion">
+      <option class="bg-black">Sumar</option>
+      <option class="bg-black">Dividir</option>
+      <option class="bg-black">Restar</option>
+      <option class="bg-black">Multiplicar</option>
+    </select>
+  </div>
+  <div class="flex flex-row items-center justify-center">
+    <div class="content text-4xl" id="sign">+</div>
+    <div class="content">
+      <!-- <p class="date">DIGITAL CLOCK with Vue.js</p> -->
+      <div class="flex flex-row text-5xl items-center content-a">
+        <TextField title="Dias" id="dia_a" />:
+        <TextField title="Hora" id="hora_a" />:
+        <TextField title="Minutos" id="minuto_a" />:
+        <TextField title="Segundo" id="segundo_a" />
+      </div>
+
+      <div class="flex flex-row text-5xl items-center content-b">
+        <TextField title="Dias" id="dia_b" />:
+        <TextField title="Hora" id="hora_b" />:
+        <TextField title="Minutos" id="minuto_b" />:
+        <TextField title="Segundo" id="segundo_b" />
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col items-center">
+    <div class="bg-[#daf6ff] w-[40vw] h-[2px]"></div>
+    <div class="content flex flex-row text-5xl items-center">
+      <TextField title="" id="resultado_dia" />:
+      <TextField title="" id="resultado_hora" />:
+      <TextField title="" id="resultado_minuto" />:
+      <TextField title="" id="resultado_segundo" />
+    </div>
+  </div>
+</container>
+<style>
+  .content {
+    text-shadow:
+      0 0 20px rgba(10, 175, 230, 1),
+      0 0 20px rgba(10, 175, 230, 0);
+    font-family: "Share Tech Mono", monospace;
+    color: #daf6ff;
+    text-align: center;
+  }
+</style>
+<script>
+  let values_A = {};
+  let values_B = {};
+  let resultado = { Dias: "", Hora: "", Minutos: "", Segundo: "" };
+  document.getElementById("operacion").addEventListener("change", function () {
+    const signElement = document.getElementById("sign");
+    const operacion = this.value;
+    let sign = "+";
+    if (operacion === "Sumar") {
+      sign = "÷";
+    } else if (operacion == "Restar") {
+      sign = "-";
+    } else if (operacion == "Multiplicar") {
+      sign = "x";
+    } else if (operacion == "Dividir") {
+      sign = "/";
+    }
+    signElement.textContent = sign;
+  });
+
+  function getTextFieldValues(element) {
+    const input_elements = element.querySelectorAll(".time");
+    const values = {};
+    input_elements.forEach((input) => {
+      values[input.previousElementSibling.textContent.trim()] = input.value;
+    });
+    return values;
+  }
+
+  function handleChange_a(event) {
+    const element = event.target.closest(".content-a");
+    values_A = getTextFieldValues(element);
+    const operacion = document.getElementById("sign").textContent;
+
+    if (operacion == "+") {
+      Sumar(values_A, values_B);
+    } else if (operacion == "-") {
+      Restar(values_A, values_B);
+    } else if (operacion == "x") {
+      Multiplicar(values_A, values_B);
+    } else if (operacion == "/") {
+      Dividir(values_A, values_B);
+    }
+  }
+  function handleChange_b(event) {
+    const element = event.target.closest(".content-b");
+    values_B = getTextFieldValues(element);
+    const operacion = document.getElementById("sign").textContent;
+
+    if (operacion == "+") {
+      Sumar(values_A, values_B);
+    } else if (operacion == "-") {
+      Restar(values_A, values_B);
+    } else if (operacion == "x") {
+      Multiplicar(values_A, values_B);
+    } else if (operacion == "/") {
+      Dividir(values_A, values_B);
+    }
+  }
+  function Sumar(valores1, valores2) {
+    const dias1 = parseInt(valores1.Dias || "0");
+    const horas1 = parseInt(valores1.Hora || "0");
+    const minutos1 = parseInt(valores1.Minutos || "0");
+    const segundos1 = parseInt(valores1.Segundo || "0");
+
+    const dias2 = parseInt(valores2.Dias || "0");
+    const horas2 = parseInt(valores2.Hora || "0");
+    const minutos2 = parseInt(valores2.Minutos || "0");
+    const segundos2 = parseInt(valores2.Segundo || "0");
+
+    let diasSuma = dias1 + dias2;
+    let horasSuma = horas1 + horas2;
+    let minutosSuma = minutos1 + minutos2;
+    let segundosSuma = segundos1 + segundos2;
+
+    let carry = 0;
+    if (segundosSuma >= 60) {
+      carry = Math.floor(segundosSuma / 60);
+      segundosSuma %= 60;
+    }
+    minutosSuma += carry;
+
+    carry = 0;
+    if (minutosSuma >= 60) {
+      carry = Math.floor(minutosSuma / 60);
+      minutosSuma %= 60;
+    }
+    horasSuma += carry;
+
+    carry = 0;
+    if (horasSuma >= 24) {
+      carry = Math.floor(horasSuma / 24);
+      horasSuma %= 24;
+    }
+    diasSuma += carry;
+
+    modificarValores(
+      diasSuma.toString().padStart(2, "0"),
+      horasSuma.toString().padStart(2, "0"),
+      minutosSuma.toString().padStart(2, "0"),
+      segundosSuma.toString().padStart(2, "0")
+    );
+  }
+  function Multiplicar(valores1, valores2) {
+    const dias1 = parseInt(valores1.Dias || "0");
+    const horas1 = parseInt(valores1.Hora || "0");
+    const minutos1 = parseInt(valores1.Minutos || "0");
+    const segundos1 = parseInt(valores1.Segundo || "0");
+
+    const dias2 = parseInt(valores2.Dias || "0");
+    const horas2 = parseInt(valores2.Hora || "0");
+    const minutos2 = parseInt(valores2.Minutos || "0");
+    const segundos2 = parseInt(valores2.Segundo || "0");
+
+    // Realizar la multiplicación de los valores
+    const diasMultiplicados = dias1 * dias2;
+    const horasMultiplicadas = horas1 * horas2;
+    const minutosMultiplicados = minutos1 * minutos2;
+    const segundosMultiplicados = segundos1 * segundos2;
+
+    // Devolver los valores multiplicados como objeto
+    modificarValores(
+      diasMultiplicados.toString().padStart(2, "0"),
+      horasMultiplicadas.toString().padStart(2, "0"),
+      minutosMultiplicados.toString().padStart(2, "0"),
+      segundosMultiplicados.toString().padStart(2, "0")
+    );
+  }
+  function Dividir(valores1, valores2) {
+    // Convertir los valores de cadena a números enteros
+    const dias1 = parseInt(valores1.Dias || "0");
+    const horas1 = parseInt(valores1.Hora || "0");
+    const minutos1 = parseInt(valores1.Minutos || "0");
+    const segundos1 = parseInt(valores1.Segundo || "0");
+
+    const dias2 = parseInt(valores2.Dias || "1"); // Divisor por defecto es 1 para evitar la división por cero
+    const horas2 = parseInt(valores2.Hora || "1");
+    const minutos2 = parseInt(valores2.Minutos || "1");
+    const segundos2 = parseInt(valores2.Segundo || "1");
+
+    // Realizar la división de los valores
+    const diasDivididos = dias1 / dias2;
+    const horasDivididas = horas1 / horas2;
+    const minutosDivididos = minutos1 / minutos2;
+    const segundosDivididos = segundos1 / segundos2;
+
+    // Devolver los valores divididos como objeto
+    modificarValores(
+      diasDivididos.toString().padStart(2, "0"),
+      horasDivididas.toString().padStart(2, "0"),
+      minutosDivididos.toString().padStart(2, "0"),
+      segundosDivididos.toString().padStart(2, "0")
+    );
+  }
+
+  function Restar(valores1, valores2) {
+    // Convertir los valores de cadena a números enteros
+    const dias1 = parseInt(valores1.Dias || "0");
+    const horas1 = parseInt(valores1.Hora || "0");
+    const minutos1 = parseInt(valores1.Minutos || "0");
+    const segundos1 = parseInt(valores1.Segundo || "0");
+
+    const dias2 = parseInt(valores2.Dias || "0");
+    const horas2 = parseInt(valores2.Hora || "0");
+    const minutos2 = parseInt(valores2.Minutos || "0");
+    const segundos2 = parseInt(valores2.Segundo || "0");
+
+    // Restar los valores correspondientes
+    let diasResta = dias1 - dias2;
+    let horasResta = horas1 - horas2;
+    let minutosResta = minutos1 - minutos2;
+    let segundosResta = segundos1 - segundos2;
+
+    // Manejar el acarreo de valores negativos
+    if (segundosResta < 0) {
+      segundosResta += 60;
+      minutosResta -= 1;
+    }
+    if (minutosResta < 0) {
+      minutosResta += 60;
+      horasResta -= 1;
+    }
+    if (horasResta < 0) {
+      horasResta += 24;
+      diasResta -= 1;
+    }
+
+    // Devolver los valores restados como objeto
+    modificarValores(
+      diasResta.toString().padStart(2, "0"),
+      horasResta.toString().padStart(2, "0"),
+      minutosResta.toString().padStart(2, "0"),
+      segundosResta.toString().padStart(2, "0")
+    );
+  }
+  function modificarValores(dia, hora, minuto, segundo) {
+    document.getElementById("resultado_dia").querySelector("input").value = dia;
+    document.getElementById("resultado_hora").querySelector("input").value =
+      hora;
+    document.getElementById("resultado_minuto").querySelector("input").value =
+      minuto;
+    document.getElementById("resultado_segundo").querySelector("input").value =
+      segundo;
+  }
+
+  const input_elements_a = document.querySelectorAll(".content-a");
+  const input_elements_b = document.querySelectorAll(".content-b");
+
+  input_elements_a.forEach((element) => {
+    const input_fields = element.querySelectorAll(".time");
+    input_fields.forEach((input) => {
+      input.addEventListener("input", handleChange_a);
+    });
+  });
+  input_elements_b.forEach((element) => {
+    const input_fields = element.querySelectorAll(".time");
+    input_fields.forEach((input) => {
+      input.addEventListener("input", handleChange_b);
+    });
+  });
+</script>
