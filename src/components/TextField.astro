@@ -9,14 +9,12 @@ const { title, id } = Astro.props;
 
 <textfield class="" id={id}>
   <p class="text-sm">{title}</p>
-  <input class="time" maxlength="2" />
+  <input class="time w-[50px] sm:w-[100px]" maxlength="2" />
 </textfield>
 
 <style>
   .time {
-    width: 100px;
     letter-spacing: 0.05em;
-    font-size: 80px;
     text-shadow:
       0 0 20px rgba(10, 175, 230, 1),
       0 0 20px rgba(10, 175, 230, 0);
